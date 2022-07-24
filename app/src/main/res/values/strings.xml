@@ -2,4 +2,6 @@
     <string name="app_name">Bluetooth test</string>
 
     <string name="bluetooth">Bluetooth</string>
+    <string name="turn_led_on">Turn led on</string>
+    <string name="turn_led_off">Turn led off</string>
 </resources>
