@@ -6,11 +6,13 @@ import android.bluetooth.BluetoothAdapter
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Switch
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.bluetoothtest.BuildConfig.DEBUG
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +26,13 @@ class MainActivity : AppCompatActivity() {
         val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
         switchBluetooth.isChecked = bluetoothAdapter!!.isEnabled
+        when (switchBluetooth.isChecked) {
+            true -> btnLedState.visibility = View.VISIBLE
+            false -> btnLedState.visibility = View.INVISIBLE
+        }
+
+        Log.d("STATE", "Visible = ${View.VISIBLE.toString()}")
+        Log.d("STATE", "Invisible = ${View.INVISIBLE}")
 
         switchBluetooth.setOnCheckedChangeListener { buttonView, isChecked ->
             when {
