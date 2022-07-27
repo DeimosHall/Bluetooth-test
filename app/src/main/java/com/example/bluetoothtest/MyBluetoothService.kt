@@ -52,5 +52,4 @@ class MyBluetoothService(context: Context) {
             }
         }
     }
-
 }
