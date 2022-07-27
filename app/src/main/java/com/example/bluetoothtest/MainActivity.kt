@@ -15,19 +15,14 @@ import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.switchmaterial.SwitchMaterial
+import java.io.IOException
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private val deviceName = "ESP32 board"
-    private var deviceAddress = ""
-
-    companion object {
-        val myUUID = UUID.fromString("d3f7b72b-3f98-4c98-8a79-d0d55603b737")
-        val bluetoothSocket : BluetoothSocket? = null
-        //lateinit var bluetoothAdapter: BluetoothAdapter
-
-    }
+    private var deviceAddress = "08:3A:F2:A9:DE:BE"
+    var bluetoothDevice: BluetoothDevice? = null
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,10 +33,20 @@ class MainActivity : AppCompatActivity() {
         val btnLedState = findViewById<Button>(R.id.btn_led_state)
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
-        val handler: Handler? = null
-        val blueService = MyBluetoothService(handler!!)
+
+        val pairedDevicesList: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
+        for (device in pairedDevicesList!!) {
+            Log.d("CHECK-BLUE", "Device: ${device.name}: ${device.address}, ${device.uuids}")
+            if (device.name == deviceName) {
+                bluetoothDevice = device
+            }
+        }
+
+        val myBluetoothService = MyBluetoothService(this)
+        val connectThread = myBluetoothService.ConnectThread(bluetoothDevice!!)
 
         val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            // Changes the visibility of the button and the switch
             when (it.resultCode) {
                 RESULT_OK -> {
                     btnLedState.visibility = View.VISIBLE
@@ -51,14 +56,6 @@ class MainActivity : AppCompatActivity() {
                     btnLedState.visibility = View.INVISIBLE
                     switchBluetooth.isChecked = false
                 }
-            }
-        }
-
-        val pairedDevicesList: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
-        for (device in pairedDevicesList!!) {
-            Log.d("CHECK", "${device.name}: ${device.address}")
-            if (device.name == deviceName) {
-                deviceAddress = device.address
             }
         }
 
@@ -92,4 +89,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }
